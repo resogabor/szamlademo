@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Számla Demo</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--<link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">-->
+  <!--<link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">-->
+  <link rel="stylesheet" href="/webjars/bootstrap/2.3.2/css/bootstrap.min.css">
+  <!--<script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>-->
+</head>
+<body ng-app="myApp">
+  <!--<ul class="menu">-->
+    <!--<li><a href="#!/view1">view1</a></li>-->
+    <!--<li><a href="#!/view2">view2</a></li>-->
+  <!--</ul>-->
+
+  <div ng-controller="szamlaCtrl" >
+    <!--<h2>{{szamlaId}}</h2>-->
+    <div ng-controller="szamlaFejCtrl">
+      <fieldset>
+        <legend>Számlák</legend>
+        <table class="table table-bordered table-hover" width="600px">
+          <thead>
+            <tr>
+              <th>Számlaszám</th>
+              <th>Vevő</th>
+              <th>Eladó</th>
+              <th>Végösszeg</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="s in szamlak " ng-click="szamlaClick(s.id)">
+              <td ng-bind="s.id"></td>
+              <td ng-bind="s.vevo"/>
+              <td ng-bind="s.elado"/>
+              <td ng-bind="s.szamlaTetelek | szamlaSumm"/>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-mini" ng-click="$parent.szlaEdited = true"><i class="icon-pencil"></i></button>
+                  <button class="btn btn-mini" ng-click="$parent.szamlaTorles(s.id)"><i class="icon-trash"></i> </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-default" ng-click="newSzamla()"><i class="icon-plus"></i> </button>
+      </fieldset>
+      <!--<div ng-controller="szamlaEdit">-->
+        <form class="form-horizontal" ng-show="szlaEdited">
+          <fieldset>
+            <legend>Számla adatok</legend>
+            <div class="control-group">
+              <label class="control-label" for="szlaSzam" >Számlaszám</label>
+              <div class="controls">
+                <input type="text" class="input-mini" id="szlaSzam" ng-model="szamla.id" disabled></input>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="vevo">Vevő</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="vevo" ng-model="szamla.vevo" placeholder="Vevő neve...">
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="elado">Eladó</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="elado" ng-model="szamla.elado" placeholder="Eladó neve...">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" ng-click="szamlaMentes(szamla)">Mentés</button>
+              <button type="button" class="btn" ng-click="szlaEdited = false;load()">Mégsem</button>
+            </div>
+          </fieldset>
+        </form>
+      <!--</div>-->
+    </div>
+    <div ng-controller="szamlaTetelCtrl">
+      <!--<h2>Szamla tételek</h2>-->
+      <fieldset>
+        <legend>Számla tételek</legend>
+        <span>{{szamlaTetelId}}</span>
+        <table class="table table-bordered table-hover" width="600px">
+          <thead>
+          <tr>
+            <th>nev</th>
+            <th>Összeg</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="t in tetelek | filter:{szamlaTetelId: szamlaId}" ng-click="tetelClick(t.id)">
+            <td ng-bind="t.nev"/>
+            <td ng-bind="t.osszeg"/>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-mini" ng-click="$parent.szlaTetelEdited = true;"><i class="icon-pencil"></i></button>
+                <button class="btn btn-mini" ng-click="$parent.tetelTorles(t.id)"><i class="icon-trash"></i> </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-default" ng-click="newTetel()"><i class="icon-plus"></i> </button>
+      </fieldset>
+      <form class="form-horizontal" ng-show="szlaTetelEdited">
+        <fieldset>
+          <legend>Számla tétel adatok</legend>
+
+          <div class="control-group">
+            <label class="control-label" for="termNev">Termék név</label>
+            <div class="controls">
+              <input type="text" class="input-large" id="termNev" ng-model="tetel.nev" placeholder="Termék neve...">
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="osszeg">Összeg</label>
+            <div class="controls">
+              <input type="number" min="0", step="0.000001" class="input-large" id="osszeg" ng-model="tetel.osszeg" placeholder="Termék ára...">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" ng-click="tetelMentes(tetel)">Mentés</button>
+            <button type="button" class="btn" ng-click="szlaTetelEdited = false; loadTetel()">Mégsem</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  <div ng-view></div>
+
+  <script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+  <script src="/webjars/bootstrap/2.3.2/js/bootstrap.js"></script>
+  <script src="/webjars/angularjs/1.6.1/angular.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

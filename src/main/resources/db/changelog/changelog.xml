@@ -1,0 +1,72 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+	<changeSet author="greso" id="1">
+		<comment>Initial schema setup</comment>
+		<createTable tableName="szamla_fej">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_company"/>
+			</column>
+			<column name="vevo" type="nvarchar(255)">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="elado" type="nvarchar(255)">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="summ" type="decimal(10,5)">
+
+			</column>
+		</createTable>
+				
+		<createTable tableName="szamla_tetel">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_module"/>
+			</column>
+			<column name="szamla_tetel_id" type="int">
+				<constraints foreignKeyName="szamla_tetel_fk" references="szamla_fej(id)"/>
+			</column>
+			<column name="nev" type="nvarchar(255)">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="osszeg" type="decimal(10,5)">
+			  <constraints nullable="false"/>
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="2" author="greso">
+		<insert tableName="szamla_fej">
+			<column name="id">1</column>
+			<column name="vevo">a</column>
+			<column name="elado">b</column>
+		</insert>
+		<insert tableName="szamla_fej">
+			<column name="id">2</column>
+			<column name="vevo">c</column>
+			<column name="elado">d</column>
+		</insert>
+		<insert tableName="szamla_tetel">
+			<column name="szamla_tetel_id">1</column>
+			<column name="nev">A termék</column>
+			<column name="osszeg">90.9</column>
+		</insert>
+		<insert tableName="szamla_tetel">
+			<column name="szamla_tetel_id">1</column>
+			<column name="nev">b termék</column>
+			<column name="osszeg">80.9</column>
+		</insert>
+		<insert tableName="szamla_tetel">
+			<column name="szamla_tetel_id">2</column>
+			<column name="nev">b termék</column>
+			<column name="osszeg">80.9</column>
+		</insert>
+		<insert tableName="szamla_tetel">
+			<column name="szamla_tetel_id">2</column>
+			<column name="nev">b termék</column>
+			<column name="osszeg">80.9</column>
+		</insert>
+	</changeSet>
+	
+</databaseChangeLog>
+            
